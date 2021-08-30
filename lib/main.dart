@@ -73,14 +73,6 @@ class MyApp extends StatelessWidget {
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
               enableFeedback: true,
-              // textStyle: MaterialStateProperty.resolveWith(
-              //   (states) {
-              //     if (states.contains(MaterialState.pressed))
-              //       return defaultTextTheme.button?.copyWith(
-              //         fontSize: 18,
-              //       );
-              //   },
-              // ),
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(

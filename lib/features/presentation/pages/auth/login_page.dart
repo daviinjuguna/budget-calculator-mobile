@@ -38,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
     _nameController.dispose();
     _phoneController.dispose();
     _passController.dispose();
-    _btnController.reset();
+    // _btnController.reset();
     _debouncer.close();
     super.dispose();
   }

@@ -9,7 +9,7 @@ class HttpInterceptors implements InterceptorContract {
     try {
       data.headers["Content-Type"] = "application/json";
       data.headers["Accept"] = "application/json";
-      if (_token != null) data.headers["Authorization"] = "Bearer $_token";
+      if (_token != null) data.headers["Authorization"] = "Token $_token";
     } catch (e) {
       print(e);
     }

@@ -9,6 +9,8 @@ import 'package:flutter/material.dart' as _i2;
 
 import '../../features/presentation/pages/auth/login_page.dart' as _i4;
 import '../../features/presentation/pages/home/home_page.dart' as _i5;
+import '../../features/presentation/pages/home/page/budget.dart' as _i6;
+import '../../features/presentation/pages/home/page/income.dart' as _i7;
 import '../../features/presentation/pages/splash/splash_page.dart' as _i3;
 
 class AppRouter extends _i1.RootStackRouter {
@@ -33,6 +35,26 @@ class AppRouter extends _i1.RootStackRouter {
         routeData: routeData,
         builder: (_) {
           return const _i5.HomePage();
+        }),
+    Budget.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return const _i6.BudgetPage();
+        }),
+    Income.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return const _i7.IncomePage();
+        }),
+    Expense.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return const _i7.IncomePage();
+        }),
+    Profile.name: (routeData) => _i1.MaterialPageX<dynamic>(
+        routeData: routeData,
+        builder: (_) {
+          return const _i7.IncomePage();
         })
   };
 
@@ -40,7 +62,14 @@ class AppRouter extends _i1.RootStackRouter {
   List<_i1.RouteConfig> get routes => [
         _i1.RouteConfig(SplashPageRoute.name, path: '/'),
         _i1.RouteConfig(LoginPageRoute.name, path: 'login'),
-        _i1.RouteConfig(HomePageRoute.name, path: 'home')
+        _i1.RouteConfig(HomePageRoute.name, path: 'home', children: [
+          _i1.RouteConfig(Budget.name, path: ''),
+          _i1.RouteConfig(Income.name, path: 'income'),
+          _i1.RouteConfig(Expense.name, path: 'expense'),
+          _i1.RouteConfig(Profile.name, path: 'profile'),
+          _i1.RouteConfig('*#redirect',
+              path: '*', redirectTo: '', fullMatch: true)
+        ])
       ];
 }
 
@@ -64,7 +93,32 @@ class LoginPageRouteArgs {
 }
 
 class HomePageRoute extends _i1.PageRouteInfo {
-  const HomePageRoute() : super(name, path: 'home');
+  const HomePageRoute({List<_i1.PageRouteInfo>? children})
+      : super(name, path: 'home', initialChildren: children);
 
   static const String name = 'HomePageRoute';
+}
+
+class Budget extends _i1.PageRouteInfo {
+  const Budget() : super(name, path: '');
+
+  static const String name = 'Budget';
+}
+
+class Income extends _i1.PageRouteInfo {
+  const Income() : super(name, path: 'income');
+
+  static const String name = 'Income';
+}
+
+class Expense extends _i1.PageRouteInfo {
+  const Expense() : super(name, path: 'expense');
+
+  static const String name = 'Expense';
+}
+
+class Profile extends _i1.PageRouteInfo {
+  const Profile() : super(name, path: 'profile');
+
+  static const String name = 'Profile';
 }

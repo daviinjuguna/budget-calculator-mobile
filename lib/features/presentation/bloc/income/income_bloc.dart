@@ -36,6 +36,14 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         (r) => IncomeSuccess(income: r),
       );
     }
+    if (event is RefreshIncomeEvent) {
+      yield IncomeRefreshing();
+      final _res = await _get.call(NoParams());
+      yield _res.fold(
+        (l) => IncomeError(),
+        (r) => IncomeSuccess(income: r),
+      );
+    }
     if (event is CreateIncomeEvent) {
       yield IncomeUpdting();
       final _res = await _create.call(ObjectParams(event.model));

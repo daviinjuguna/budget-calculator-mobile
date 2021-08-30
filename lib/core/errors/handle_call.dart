@@ -1,4 +1,6 @@
 import 'package:injectable/injectable.dart';
+import 'package:sortika_budget_calculator/di/injection.dart';
+import 'package:sortika_budget_calculator/features/data/datasource/local.dart';
 
 import 'exeptions.dart';
 
@@ -11,6 +13,9 @@ class HandleNetworkCall {
     if (responseStatus == 200 || responseStatus == 201) {
       return true;
     } else if (responseStatus == 401) {
+      getIt<LocalDataSource>()
+          .clearPrefs()
+          .then((value) => print("CACHE CLEARD"));
       throw UnAuthenticatedException();
     } else if (responseStatus == 500) {
       throw ServerException();

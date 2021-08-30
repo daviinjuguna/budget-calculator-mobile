@@ -5,18 +5,21 @@ import 'package:sortika_budget_calculator/features/domain/model/income_model.dar
 
 class IncomeResponse {
   final List<IncomeModel> incomes;
+  final double? total;
   final IncomeModel? singleIncome;
   final String? error;
 
-  IncomeResponse(this.incomes, {this.singleIncome}) : error = null;
+  IncomeResponse(this.incomes, this.total, {this.singleIncome}) : error = null;
 
   IncomeResponse.single(this.singleIncome)
       : incomes = [],
+        total = null,
         error = null;
 
   IncomeResponse.withError(String errorValue)
       : error = networkErrorConverter(errorValue),
         incomes = [],
+        total = null,
         singleIncome = null;
 
   @override
@@ -25,14 +28,21 @@ class IncomeResponse {
 
     return other is IncomeResponse &&
         listEquals(other.incomes, incomes) &&
+        other.total == total &&
         other.singleIncome == singleIncome &&
         other.error == error;
   }
 
   @override
-  int get hashCode => incomes.hashCode ^ singleIncome.hashCode ^ error.hashCode;
+  int get hashCode {
+    return incomes.hashCode ^
+        total.hashCode ^
+        singleIncome.hashCode ^
+        error.hashCode;
+  }
 
   @override
-  String toString() =>
-      'IncomeResponse(incomes: $incomes, singleIncome: $singleIncome, error: $error)';
+  String toString() {
+    return 'IncomeResponse(incomes: $incomes, total: $total, singleIncome: $singleIncome, error: $error)';
+  }
 }

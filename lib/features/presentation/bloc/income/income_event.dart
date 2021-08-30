@@ -5,6 +5,8 @@ abstract class IncomeEvent {}
 
 class GetIncomeEvent extends IncomeEvent {}
 
+class RefreshIncomeEvent extends IncomeEvent {}
+
 class CreateIncomeEvent extends IncomeEvent {
   final List<IncomeModel> list;
   final IncomeModel model;
