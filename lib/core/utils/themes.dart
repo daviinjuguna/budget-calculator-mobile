@@ -12,6 +12,6 @@ final defaultColorScheme = ColorScheme.light(
   primaryVariant: kDarkGreen,
   secondary: kLightGreen,
   secondaryVariant: kDarkGreen,
-  error: kMaroonColor,
+  error: Colors.red,
 );
 final defaultTextTheme = GoogleFonts.robotoTextTheme();

@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sortika_budget_calculator/core/routes/app_router.gr.dart';
 import 'package:sortika_budget_calculator/features/presentation/bloc/splash/splash_bloc.dart';
 
 class SplashPage extends StatefulWidget {
@@ -30,9 +31,11 @@ class _SplashPageState extends State<SplashPage> {
       listeners: [
         BlocListener<SplashBloc, SplashState>(
           listener: (context, state) {
-            if (state is SplashLoggedIn) {}
+            if (state is SplashLoggedIn) {
+              AutoRouter.of(context).replaceAll([HomePageRoute()]);
+            }
             if (state is SplashLoggedOut) {
-              // AutoRouter.of(context).replaceAll([LoginRoute()]);
+              AutoRouter.of(context).replaceAll([LoginPageRoute()]);
             }
           },
         )

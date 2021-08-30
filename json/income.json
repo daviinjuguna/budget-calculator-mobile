@@ -1,0 +1,18 @@
+{
+  "income": [
+    {
+      "id": 3,
+      "income": "Salary",
+      "amount": 30000,
+      "user": 1
+    },
+    {
+      "id": 2,
+      "income": "Sponsors",
+      "amount": 25000,
+      "user": 1
+    }
+  ],
+  "total": 55000,
+  "last_page": 1
+}

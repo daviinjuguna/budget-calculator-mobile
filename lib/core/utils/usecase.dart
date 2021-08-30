@@ -122,3 +122,30 @@ class ParamsStringNullable {
   @override
   int get hashCode => string.hashCode;
 }
+
+class ObjectParams<T> {
+  final T object;
+
+  ObjectParams(this.object);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ObjectParams<T> && other.object == object;
+  }
+
+  @override
+  int get hashCode => object.hashCode;
+
+  @override
+  String toString() => 'ObjectParams(object: $object)';
+
+  ObjectParams<T> copyWith({
+    T? object,
+  }) {
+    return ObjectParams<T>(
+      object ?? this.object,
+    );
+  }
+}

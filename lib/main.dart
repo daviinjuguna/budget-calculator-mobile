@@ -3,22 +3,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:sortika_budget_calculator/core/utils/bloc_observer.dart';
 import 'package:sortika_budget_calculator/core/utils/constants.dart';
 import 'package:sortika_budget_calculator/core/utils/themes.dart';
 import 'package:sortika_budget_calculator/di/injection.dart';
 import 'package:sortika_budget_calculator/features/presentation/bloc/splash/splash_bloc.dart';
+import 'package:telephony/telephony.dart';
 
 import 'core/routes/app_router.gr.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Bloc.observer = SimpleBlocObserver();
   GoogleFonts.config.allowRuntimeFetching = false;
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('google_fonts/LICENSE.txt');
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   await configureInjection(environment: DEVELOPMENT);
+  handleSms();
   runApp(MyApp());
+}
+
+void handleSms() {
+  Telephony.instance.listenIncomingSms(
+      onNewMessage: (SmsMessage sms) {
+        print(sms.address);
+        print(sms.body);
+        print(sms.subject);
+        print(sms.type);
+      },
+      listenInBackground: false);
 }
 
 class MyApp extends StatelessWidget {
@@ -58,12 +73,14 @@ class MyApp extends StatelessWidget {
           textButtonTheme: TextButtonThemeData(
             style: ButtonStyle(
               enableFeedback: true,
-              textStyle: MaterialStateProperty.resolveWith((states) {
-                if (states.contains(MaterialState.pressed))
-                  return TextStyle(
-                    fontSize: 18,
-                  );
-              }),
+              // textStyle: MaterialStateProperty.resolveWith(
+              //   (states) {
+              //     if (states.contains(MaterialState.pressed))
+              //       return defaultTextTheme.button?.copyWith(
+              //         fontSize: 18,
+              //       );
+              //   },
+              // ),
             ),
           ),
           inputDecorationTheme: InputDecorationTheme(
