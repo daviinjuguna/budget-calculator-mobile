@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                                   AutovalidateMode.onUserInteraction,
                               validator: (value) {
                                 if (!RegExp(PHONE_REGEX).hasMatch(value!))
-                                  return "Phone number  format: '+999999999'";
+                                  return "Phone number format: '+999999999' upto 14 digits";
                               },
                               decoration: InputDecoration(
                                 labelText: "Phone",
@@ -179,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                               obscureText: true,
                               validator: (value) {
                                 if (!RegExp(PASS_REGEX).hasMatch(value!))
-                                  return "Password should be 6 alphanumericals";
+                                  return "Password requires strength, try atleast 6 alphanumericals";
                               },
                               decoration: InputDecoration(
                                 labelText: "Password",

@@ -27,6 +27,15 @@ class ExpenseModel {
     return _$ExpenseModelFromJson(json);
   }
 
+  factory ExpenseModel.defaultExpense(
+          {required String expense, required double percent}) =>
+      ExpenseModel(
+        id: 1,
+        expense: expense,
+        isStatic: false,
+        percentageAmmount: percent,
+      );
+
   Map<String, dynamic> toJson() => _$ExpenseModelToJson(this);
 
   ExpenseModel copyWith({

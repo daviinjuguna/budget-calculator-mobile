@@ -23,6 +23,19 @@ class _ExpensePageState extends State<ExpensePage> {
     });
   }
 
+  List<ExpenseModel> _defaultExpense = [
+    ExpenseModel.defaultExpense(expense: "Housing", percent: 22.5),
+    ExpenseModel.defaultExpense(expense: "Food & Shopping", percent: 15.0),
+    ExpenseModel.defaultExpense(expense: "Savings & Investment", percent: 17.0),
+    ExpenseModel.defaultExpense(
+        expense: "Faith & Church/Charity", percent: 12.0),
+    ExpenseModel.defaultExpense(expense: "Transport", percent: 10.0),
+    ExpenseModel.defaultExpense(expense: "Utilities", percent: 5.0),
+    ExpenseModel.defaultExpense(expense: "Clothing", percent: 5.0),
+    ExpenseModel.defaultExpense(
+        expense: "Personal Care & Wellness", percent: 6.0),
+    ExpenseModel.defaultExpense(expense: "Entertainment", percent: 7.0),
+  ];
   List<ExpenseModel> _expense = [];
   late Completer<void> _completer = Completer();
   @override
@@ -38,6 +51,7 @@ class _ExpensePageState extends State<ExpensePage> {
         listener: (context, state) {
           if (state is ExpenseSuccess) {
             _expense = state.expense;
+
             _completer.complete();
             _completer = Completer();
           }
@@ -70,7 +84,46 @@ class _ExpensePageState extends State<ExpensePage> {
                         }
                       }),
                       child: Text("Add Expense"),
-                    )
+                    ),
+                    TextButton(
+                        onPressed: () => showDialog<bool?>(
+                              context: context,
+                              builder: (builder) => AlertDialog(
+                                title: Text("ADD DEFAULT EXPENSE"),
+                                content: Text(
+                                    "Are you sure you want to add default expense?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(null),
+                                    child: Text(
+                                      "CANCEL",
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(
+                                      "OK",
+                                      style: TextStyle(color: Colors.green),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ).then((value) {
+                              if (value != null && value) {
+                                for (int i = 0;
+                                    i < _defaultExpense.length;
+                                    i++) {
+                                  BlocProvider.of<ExpenseBloc>(context).add(
+                                      CreateExpenseEvent(
+                                          list: _expense
+                                            ..add(_defaultExpense[i]),
+                                          model: _defaultExpense[i]));
+                                }
+                              }
+                            }),
+                        child: Text("Add Default Expense"))
                   ],
                 ),
               ),
