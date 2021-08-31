@@ -13,22 +13,26 @@ class IncomeUpdting extends IncomeState {}
 
 class IncomeSuccess extends IncomeState {
   final List<IncomeModel> income;
+  final double total;
   IncomeSuccess({
     required this.income,
+    required this.total,
   });
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is IncomeSuccess && listEquals(other.income, income);
+    return other is IncomeSuccess &&
+        listEquals(other.income, income) &&
+        other.total == total;
   }
 
   @override
-  int get hashCode => income.hashCode;
+  int get hashCode => income.hashCode ^ total.hashCode;
 
   @override
-  String toString() => 'IncomeSuccess(income: $income)';
+  String toString() => 'IncomeSuccess(income: $income, total: $total)';
 }
 
 class IncomeError extends IncomeState {}

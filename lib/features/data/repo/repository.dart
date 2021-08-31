@@ -3,6 +3,7 @@ import 'package:injectable/injectable.dart';
 import 'package:sortika_budget_calculator/core/errors/map_exeption.dart';
 import 'package:sortika_budget_calculator/features/data/datasource/local.dart';
 import 'package:sortika_budget_calculator/features/data/datasource/remote.dart';
+import 'package:sortika_budget_calculator/features/data/response/income_response.dart';
 import 'package:sortika_budget_calculator/features/domain/model/expense_model.dart';
 import 'package:sortika_budget_calculator/features/domain/model/income_model.dart';
 
@@ -13,7 +14,7 @@ abstract class Repository {
       {required String phone, required String pass, String? name});
   Future<Either<String, bool>> checkAuth();
 
-  Future<Either<String, List<IncomeModel>>> getIncome();
+  Future<Either<String, IncomeResponse>> getIncome();
   Future<Either<String, IncomeModel>> createIncome(IncomeModel model);
   Future<Either<String, IncomeModel>> editIncome(IncomeModel model);
   Future<Either<String, String>> deleteIncome(IncomeModel model);
@@ -79,12 +80,12 @@ class RepositoryImpl implements Repository {
   }
 
   @override
-  Future<Either<String, List<IncomeModel>>> getIncome() async {
+  Future<Either<String, IncomeResponse>> getIncome() async {
     try {
       final _res = await _remote.getIncome();
       if (_res.error != null && _res.error!.length != 0)
         return left(_res.error!);
-      return right(_res.incomes);
+      return right(_res);
     } catch (e) {
       print(e);
       return left(mapExeption(e));

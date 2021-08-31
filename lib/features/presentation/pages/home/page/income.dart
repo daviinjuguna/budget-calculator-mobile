@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sortika_budget_calculator/features/domain/model/income_model.dart';
 import 'package:sortika_budget_calculator/features/presentation/bloc/income/income_bloc.dart';
+import 'package:sortika_budget_calculator/features/presentation/pages/home/components/create_dialog.dart';
 
 class IncomePage extends StatefulWidget {
   const IncomePage({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class _IncomePageState extends State<IncomePage>
     super.initState();
   }
 
-  int _total = 0;
+  double _total = 0;
 
   List<IncomeModel> _income = [];
   late Completer<void> _completer = Completer();
@@ -45,6 +46,7 @@ class _IncomePageState extends State<IncomePage>
       child: BlocConsumer<IncomeBloc, IncomeState>(
         listener: (_, state) {
           if (state is IncomeSuccess) {
+            _total = state.total;
             _income = state.income;
             _completer.complete();
             _completer = Completer();
@@ -67,13 +69,16 @@ class _IncomePageState extends State<IncomePage>
                   children: [
                     Text("Total: KES $_total"),
                     TextButton(
-                      onPressed: () {
-                        BlocProvider.of<IncomeBloc>(context).add(
-                            CreateIncomeEvent(
-                                list: _income,
-                                model: IncomeModel(
-                                    id: 1, income: "Funds", amount: 5000)));
-                      },
+                      onPressed: () => showDialog<IncomeModel?>(
+                        context: context,
+                        builder: (builder) => CreateDialog(),
+                      ).then((value) {
+                        if (value != null) {
+                          BlocProvider.of<IncomeBloc>(context).add(
+                              CreateIncomeEvent(
+                                  total: _total, list: _income, model: value));
+                        }
+                      }),
                       child: Text("Add Icome"),
                     )
                   ],
@@ -92,7 +97,69 @@ class _IncomePageState extends State<IncomePage>
                   itemBuilder: (_, i) => Card(
                     child: ListTile(
                       title: Text(_income[i].income),
-                      subtitle: Text("KES ${_income[i].amount.truncate()}"),
+                      subtitle: Text("KES ${_income[i].amount}"),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () => showDialog<IncomeModel?>(
+                              context: context,
+                              builder: (builder) => CreateDialog(
+                                income: _income[i],
+                              ),
+                            ).then((value) {
+                              if (value != null) {
+                                BlocProvider.of<IncomeBloc>(context).add(
+                                    EditIncomeEvent(
+                                        list: _income,
+                                        initial: _income[i],
+                                        model: value,
+                                        index: i,
+                                        total: _total));
+                                print(value);
+                              }
+                            }),
+                            icon: Icon(Icons.edit),
+                          ),
+                          IconButton(
+                            onPressed: () => showDialog<bool?>(
+                              context: context,
+                              builder: (builder) => AlertDialog(
+                                title: Text("DELETE"),
+                                content:
+                                    Text("Are you sure you want to delete?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(null),
+                                    child: Text(
+                                      "CANCEL",
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(true),
+                                    child: Text(
+                                      "DELETE",
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ).then((value) {
+                              if (value != null && value) {
+                                BlocProvider.of<IncomeBloc>(context).add(
+                                    DeleteIncomeEvent(
+                                        list: _income,
+                                        model: _income[i],
+                                        total: _total));
+                              }
+                            }),
+                            icon: Icon(Icons.delete),
+                            color: Colors.red,
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),

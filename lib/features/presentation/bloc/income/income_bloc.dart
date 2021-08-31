@@ -33,7 +33,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       final _res = await _get.call(NoParams());
       yield _res.fold(
         (l) => IncomeError(),
-        (r) => IncomeSuccess(income: r),
+        (r) => IncomeSuccess(income: r.incomes, total: r.total!),
       );
     }
     if (event is RefreshIncomeEvent) {
@@ -41,7 +41,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       final _res = await _get.call(NoParams());
       yield _res.fold(
         (l) => IncomeError(),
-        (r) => IncomeSuccess(income: r),
+        (r) => IncomeSuccess(income: r.incomes, total: r.total!),
       );
     }
     if (event is CreateIncomeEvent) {
@@ -50,9 +50,10 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
 
       yield _res.fold(
         (l) => IncomeError(),
-        (r) => IncomeSuccess(
+        (income) => IncomeSuccess(
+          total: event.total + income.amount,
           income: [
-            ...[r],
+            ...[income],
             ...event.list
           ],
         ),
@@ -62,13 +63,15 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       yield IncomeUpdting();
       final _res = await _edit.call(ObjectParams(event.model));
 
-      yield _res.fold(
-        (l) => IncomeError(),
-        (income) => IncomeSuccess(
+      yield _res.fold((l) => IncomeError(), (income) {
+        final _diff = event.total - event.initial.amount;
+        print(_diff);
+        return IncomeSuccess(
+            total: _diff + income.amount,
             income: event.list
               ..removeWhere((item) => item.id == event.model.id)
-              ..insert(event.index, income)),
-      );
+              ..insert(event.index, income));
+      });
     }
 
     if (event is DeleteIncomeEvent) {
@@ -78,6 +81,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       yield _res.fold(
         (l) => IncomeError(),
         (income) => IncomeSuccess(
+            total: event.total - event.model.amount,
             income: event.list
               ..removeWhere((item) => item.id == event.model.id)),
       );
