@@ -26,14 +26,29 @@ void main() async {
 }
 
 void handleSms() {
-  Telephony.instance.listenIncomingSms(
+  Telephony.instance
+    ..listenIncomingSms(
       onNewMessage: (SmsMessage sms) {
         print(sms.address);
         print(sms.body);
         print(sms.subject);
         print(sms.type);
       },
-      listenInBackground: false);
+      listenInBackground: false,
+    )
+    ..getInboxSms(
+      columns: [SmsColumn.ADDRESS, SmsColumn.BODY],
+      filter: SmsFilter.where(SmsColumn.ADDRESS).equals(MPESA),
+      sortOrder: [
+        OrderBy(SmsColumn.ADDRESS, sort: Sort.ASC),
+        OrderBy(SmsColumn.BODY)
+      ],
+    ).then((sms) {
+      sms.forEach((element) {
+        print(element.address);
+        print(element.body);
+      });
+    });
 }
 
 class MyApp extends StatelessWidget {

@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:meta/meta.dart';
+import 'package:sortika_budget_calculator/core/utils/usecase.dart';
+import 'package:sortika_budget_calculator/features/domain/model/expense_model.dart';
 import 'package:sortika_budget_calculator/features/domain/usecase/create_expense.dart';
 import 'package:sortika_budget_calculator/features/domain/usecase/delete_expense.dart';
 import 'package:sortika_budget_calculator/features/domain/usecase/edit_expense.dart';
@@ -24,6 +27,50 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
   Stream<ExpenseState> mapEventToState(
     ExpenseEvent event,
   ) async* {
-    // TODO: implement mapEventToState
+    if (event is GetExpenseEvent) {
+      yield ExpenseLoading();
+      final _res = await _get.call(NoParams());
+      yield _res.fold((l) => ExpenseError(), (r) => ExpenseSuccess(expense: r));
+    }
+    if (event is RefreshExpenseEvent) {
+      yield ExpenseUpdating();
+      final _res = await _get.call(NoParams());
+      yield _res.fold((l) => ExpenseError(), (r) => ExpenseSuccess(expense: r));
+    }
+    if (event is CreateExpenseEvent) {
+      yield ExpenseUpdating();
+      final _res = await _create.call(ObjectParams(event.model));
+      yield _res.fold(
+        (l) => ExpenseError(),
+        (expense) => ExpenseSuccess(
+          expense: [
+            ...[expense],
+            ...event.list
+          ],
+        ),
+      );
+    }
+    if (event is EditExpenseEvent) {
+      yield ExpenseUpdating();
+      final _res = await _edit.call(ObjectParams(event.model));
+      yield _res.fold(
+        (l) => ExpenseError(),
+        (expense) => ExpenseSuccess(
+          expense: event.list
+            ..removeWhere((item) => item.id == event.model.id)
+            ..insert(event.index, expense),
+        ),
+      );
+    }
+    if (event is DeleteExpenseEvent) {
+      yield ExpenseUpdating();
+      final _res = await _delete.call(ObjectParams(event.model));
+      yield _res.fold(
+        (l) => ExpenseError(),
+        (expense) => ExpenseSuccess(
+          expense: event.list..removeWhere((item) => item.id == event.model.id),
+        ),
+      );
+    }
   }
 }

@@ -9,14 +9,17 @@ class ExpenseModel {
   @JsonKey(name: "expense")
   final String expense;
   @JsonKey(name: "amount")
-  final double percentageAmmount;
+  final double? ammount;
+  @JsonKey(name: "percent")
+  final double? percentageAmmount;
   @JsonKey(name: "static")
   final bool isStatic;
 
   ExpenseModel({
     required this.id,
     required this.expense,
-    required this.percentageAmmount,
+    this.ammount,
+    this.percentageAmmount,
     required this.isStatic,
   });
 
@@ -29,12 +32,14 @@ class ExpenseModel {
   ExpenseModel copyWith({
     int? id,
     String? expense,
+    double? ammount,
     double? percentageAmmount,
     bool? isStatic,
   }) {
     return ExpenseModel(
       id: id ?? this.id,
       expense: expense ?? this.expense,
+      ammount: ammount ?? this.ammount,
       percentageAmmount: percentageAmmount ?? this.percentageAmmount,
       isStatic: isStatic ?? this.isStatic,
     );
@@ -47,6 +52,7 @@ class ExpenseModel {
     return other is ExpenseModel &&
         other.id == id &&
         other.expense == expense &&
+        other.ammount == ammount &&
         other.percentageAmmount == percentageAmmount &&
         other.isStatic == isStatic;
   }
@@ -55,12 +61,13 @@ class ExpenseModel {
   int get hashCode {
     return id.hashCode ^
         expense.hashCode ^
+        ammount.hashCode ^
         percentageAmmount.hashCode ^
         isStatic.hashCode;
   }
 
   @override
   String toString() {
-    return 'ExpenseModel(id: $id, expense: $expense, percentageAmmount: $percentageAmmount, isStatic: $isStatic)';
+    return 'ExpenseModel(id: $id, expense: $expense, ammount: $ammount, percentageAmmount: $percentageAmmount, isStatic: $isStatic)';
   }
 }

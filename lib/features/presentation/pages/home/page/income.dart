@@ -85,85 +85,90 @@ class _IncomePageState extends State<IncomePage>
                 ),
               ),
               Expanded(
-                  child: RefreshIndicator(
-                onRefresh: () {
-                  BlocProvider.of<IncomeBloc>(context)
-                      .add(RefreshIncomeEvent());
-                  return _completer.future;
-                },
-                child: ListView.builder(
-                  physics: AlwaysScrollableScrollPhysics(),
-                  itemCount: _income.length,
-                  itemBuilder: (_, i) => Card(
-                    child: ListTile(
-                      title: Text(_income[i].income),
-                      subtitle: Text("KES ${_income[i].amount}"),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () => showDialog<IncomeModel?>(
-                              context: context,
-                              builder: (builder) => CreateDialog(
-                                income: _income[i],
+                  child: (state is IncomeLoading)
+                      ? Center(child: CircularProgressIndicator())
+                      : RefreshIndicator(
+                          onRefresh: () {
+                            BlocProvider.of<IncomeBloc>(context)
+                                .add(RefreshIncomeEvent());
+                            return _completer.future;
+                          },
+                          child: ListView.builder(
+                            physics: AlwaysScrollableScrollPhysics(),
+                            itemCount: _income.length,
+                            itemBuilder: (_, i) => Card(
+                              child: ListTile(
+                                title: Text(_income[i].income),
+                                subtitle: Text("KES ${_income[i].amount}"),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () => showDialog<IncomeModel?>(
+                                        context: context,
+                                        builder: (builder) => CreateDialog(
+                                          income: _income[i],
+                                        ),
+                                      ).then((value) {
+                                        if (value != null) {
+                                          BlocProvider.of<IncomeBloc>(context)
+                                              .add(EditIncomeEvent(
+                                                  list: _income,
+                                                  initial: _income[i],
+                                                  model: value,
+                                                  index: i,
+                                                  total: _total));
+                                          print(value);
+                                        }
+                                      }),
+                                      icon: Icon(Icons.edit),
+                                    ),
+                                    IconButton(
+                                      onPressed: () => showDialog<bool?>(
+                                        context: context,
+                                        builder: (builder) => AlertDialog(
+                                          title: Text("DELETE"),
+                                          content: Text(
+                                              "Are you sure you want to delete?"),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(null),
+                                              child: Text(
+                                                "CANCEL",
+                                              ),
+                                            ),
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.of(context)
+                                                      .pop(true),
+                                              child: Text(
+                                                "DELETE",
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ).then((value) {
+                                        if (value != null && value) {
+                                          BlocProvider.of<IncomeBloc>(context)
+                                              .add(DeleteIncomeEvent(
+                                                  list: _income,
+                                                  model: _income[i],
+                                                  total: _total));
+                                        }
+                                      }),
+                                      icon: Icon(Icons.delete),
+                                      color: Colors.red,
+                                    )
+                                  ],
+                                ),
                               ),
-                            ).then((value) {
-                              if (value != null) {
-                                BlocProvider.of<IncomeBloc>(context).add(
-                                    EditIncomeEvent(
-                                        list: _income,
-                                        initial: _income[i],
-                                        model: value,
-                                        index: i,
-                                        total: _total));
-                                print(value);
-                              }
-                            }),
-                            icon: Icon(Icons.edit),
+                            ),
                           ),
-                          IconButton(
-                            onPressed: () => showDialog<bool?>(
-                              context: context,
-                              builder: (builder) => AlertDialog(
-                                title: Text("DELETE"),
-                                content:
-                                    Text("Are you sure you want to delete?"),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(null),
-                                    child: Text(
-                                      "CANCEL",
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(true),
-                                    child: Text(
-                                      "DELETE",
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ).then((value) {
-                              if (value != null && value) {
-                                BlocProvider.of<IncomeBloc>(context).add(
-                                    DeleteIncomeEvent(
-                                        list: _income,
-                                        model: _income[i],
-                                        total: _total));
-                              }
-                            }),
-                            icon: Icon(Icons.delete),
-                            color: Colors.red,
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ))
+                        ))
             ],
           );
         },
