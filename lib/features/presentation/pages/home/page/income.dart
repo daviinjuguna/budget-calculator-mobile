@@ -48,6 +48,7 @@ class _IncomePageState extends State<IncomePage>
           if (state is IncomeSuccess) {
             _total = state.total;
             _income = state.income;
+
             _completer.complete();
             _completer = Completer();
           }

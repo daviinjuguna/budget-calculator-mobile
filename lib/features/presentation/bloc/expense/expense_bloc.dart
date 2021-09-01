@@ -30,12 +30,16 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     if (event is GetExpenseEvent) {
       yield ExpenseLoading();
       final _res = await _get.call(NoParams());
-      yield _res.fold((l) => ExpenseError(), (r) => ExpenseSuccess(expense: r));
+      yield _res.fold((l) => ExpenseError(), (expenses) {
+        return ExpenseSuccess(
+            expense: expenses.expense, total: expenses.total!);
+      });
     }
     if (event is RefreshExpenseEvent) {
       yield ExpenseUpdating();
       final _res = await _get.call(NoParams());
-      yield _res.fold((l) => ExpenseError(), (r) => ExpenseSuccess(expense: r));
+      yield _res.fold((l) => ExpenseError(),
+          (r) => ExpenseSuccess(expense: r.expense, total: r.total!));
     }
     if (event is CreateExpenseEvent) {
       yield ExpenseUpdating();
@@ -43,6 +47,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       yield _res.fold(
         (l) => ExpenseError(),
         (expense) => ExpenseSuccess(
+          total: event.total + expense.ammount,
           expense: [
             ...[expense],
             ...event.list
@@ -56,6 +61,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       yield _res.fold(
         (l) => ExpenseError(),
         (expense) => ExpenseSuccess(
+          total: (event.total - event.initial.ammount) + expense.ammount,
           expense: event.list
             ..removeWhere((item) => item.id == event.model.id)
             ..insert(event.index, expense),
@@ -68,6 +74,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       yield _res.fold(
         (l) => ExpenseError(),
         (expense) => ExpenseSuccess(
+          total: event.total - event.model.ammount,
           expense: event.list..removeWhere((item) => item.id == event.model.id),
         ),
       );

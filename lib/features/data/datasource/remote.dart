@@ -157,9 +157,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       late final Map<String, dynamic> _body = jsonDecode(_res.body);
 
       if (_status) {
-        return ExpenseResponse((_body["expense"] as List)
-            .map((e) => ExpenseModel.fromJson(e))
-            .toList());
+        return ExpenseResponse(
+            (_body["expense"] as List)
+                .map((e) => ExpenseModel.fromJson(e))
+                .toList(),
+            _body['total']);
       }
       return ExpenseResponse.withError(_res.body);
     } catch (e) {

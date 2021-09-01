@@ -6,14 +6,19 @@ import 'package:sortika_budget_calculator/features/domain/model/expense_model.da
 class ExpenseResponse {
   final List<ExpenseModel> expense;
   final ExpenseModel? singleExpense;
+  final double? total;
+
   final String? error;
 
-  ExpenseResponse(this.expense, {this.singleExpense}) : error = null;
+  ExpenseResponse(this.expense, this.total, {this.singleExpense})
+      : error = null;
   ExpenseResponse.single(this.singleExpense)
       : expense = [],
+        total = null,
         error = null;
   ExpenseResponse.withError(String errorValue)
       : expense = [],
+        total = null,
         singleExpense = null,
         error = networkErrorConverter(errorValue);
 

@@ -33,7 +33,10 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       final _res = await _get.call(NoParams());
       yield _res.fold(
         (l) => IncomeError(),
-        (r) => IncomeSuccess(income: r.incomes, total: r.total!),
+        (r) {
+          if (r.incomes.isEmpty) {}
+          return IncomeSuccess(income: r.incomes, total: r.total!);
+        },
       );
     }
     if (event is RefreshIncomeEvent) {
