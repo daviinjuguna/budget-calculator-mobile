@@ -3,7 +3,7 @@ const ACCESS_TOKENS = "token";
 const DEVELOPMENT = 'dev';
 const PRODUCTION = 'prod';
 
-const BASE_URL = "192.168.0.20:9000";
+const BASE_URL = "budget-c.herokuapp.com/";
 
 const PASS_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
 const NAME_REGEX = r"^[a-zA-Z]{2,30}$";
