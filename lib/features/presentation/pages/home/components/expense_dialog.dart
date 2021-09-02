@@ -39,16 +39,16 @@ class _CreateDialogState extends State<ExpenseDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          TextField(
-            keyboardType: TextInputType.text,
-            controller: _title,
-            decoration: InputDecoration(
-              labelText: "Expense",
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
+          // TextField(
+          //   keyboardType: TextInputType.text,
+          //   controller: _title,
+          //   decoration: InputDecoration(
+          //     labelText: "Expense",
+          //   ),
+          // ),
+          // SizedBox(
+          //   height: 5,
+          // ),
           TextField(
             keyboardType: TextInputType.number,
             inputFormatters: [],

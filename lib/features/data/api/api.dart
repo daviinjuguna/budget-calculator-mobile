@@ -61,7 +61,7 @@ class ApiImpl implements Api {
 
   @override
   Future<http.Response> getIncomes() {
-    final _url = '/user/income/';
+    final _url = '/user/income';
     return _client.get(appUrl(_url));
   }
 
@@ -85,7 +85,7 @@ class ApiImpl implements Api {
 
   @override
   Future<http.Response> getExpense() {
-    final _url = '/user/expense/';
+    final _url = '/user/expense';
     return _client.get(appUrl(_url));
   }
 

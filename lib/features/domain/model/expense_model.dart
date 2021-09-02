@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'dart:math' as math;
 part 'expense_model.g.dart';
 
+// {"id":1,"expense":"Housing","amount":7000.0,"static":false,"user":1}
 @JsonSerializable()
 class ExpenseModel {
   @JsonKey(name: "id")

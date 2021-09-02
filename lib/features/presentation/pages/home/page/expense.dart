@@ -53,6 +53,13 @@ class _ExpensePageState extends State<ExpensePage> {
           if (state is ExpenseSuccess) {
             _expense = state.expense;
             _totalExpense = state.total;
+
+            setState(() {
+              state.expense.forEach((exp1) {
+                _defaultExpense
+                    .removeWhere((exp2) => exp1.expense == exp2.expense);
+              });
+            });
             _completer.complete();
             _completer = Completer();
           }
@@ -75,7 +82,9 @@ class _ExpensePageState extends State<ExpensePage> {
                     TextButton(
                       onPressed: () => showDialog<ExpenseModel?>(
                         context: context,
-                        builder: (builder) => ExpenseDialog(),
+                        builder: (builder) => SuggestedDialog(
+                          expense: _defaultExpense,
+                        ),
                       ).then((value) {
                         if (value != null) {
                           BlocProvider.of<ExpenseBloc>(context)
@@ -90,22 +99,22 @@ class _ExpensePageState extends State<ExpensePage> {
                       }),
                       child: Text("Add Expense"),
                     ),
-                    TextButton(
-                        onPressed: () => showDialog<ExpenseModel?>(
-                              context: context,
-                              builder: (builder) => SuggestedDialog(
-                                expense: _defaultExpense,
-                              ),
-                            ).then((value) {
-                              if (value != null) {
-                                BlocProvider.of<ExpenseBloc>(context).add(
-                                    CreateExpenseEvent(
-                                        total: _totalExpense,
-                                        list: _expense,
-                                        model: value));
-                              }
-                            }),
-                        child: Text("Add Suggested Expense"))
+                    // TextButton(
+                    //     onPressed: () => showDialog<ExpenseModel?>(
+                    //           context: context,
+                    //           builder: (builder) => SuggestedDialog(
+                    //             expense: _defaultExpense,
+                    //           ),
+                    //         ).then((value) {
+                    //           if (value != null) {
+                    //             BlocProvider.of<ExpenseBloc>(context).add(
+                    //                 CreateExpenseEvent(
+                    //                     total: _totalExpense,
+                    //                     list: _expense,
+                    //                     model: value));
+                    //           }
+                    //         }),
+                    //     child: Text("Add Suggested Expense"))
                   ],
                 ),
               ),

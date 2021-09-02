@@ -48,7 +48,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
       );
     }
     if (event is CreateIncomeEvent) {
-      yield IncomeUpdting();
+      yield IncomeCreating();
       final _res = await _create.call(ObjectParams(event.model));
 
       yield _res.fold(
@@ -78,7 +78,7 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
     }
 
     if (event is DeleteIncomeEvent) {
-      yield IncomeUpdting();
+      yield IncomeDeleting();
       final _res = await _delete.call(ObjectParams(event.model));
 
       yield _res.fold(

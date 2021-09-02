@@ -39,6 +39,20 @@ class _BudgetPageState extends State<BudgetPage>
   bool get wantKeepAlive => true;
   List<ExpenseModel> _expense = [];
   List<NewModel> _new = [];
+
+  List<ExpenseModel> _defaultExpense = [
+    ExpenseModel.defaultExpense(expense: "Housing", amount: 22.5),
+    ExpenseModel.defaultExpense(expense: "Food & Shopping", amount: 15.0),
+    ExpenseModel.defaultExpense(expense: "Savings & Investment", amount: 17.0),
+    ExpenseModel.defaultExpense(
+        expense: "Faith & Church/Charity", amount: 12.0),
+    ExpenseModel.defaultExpense(expense: "Transport", amount: 10.0),
+    ExpenseModel.defaultExpense(expense: "Utilities", amount: 5.0),
+    ExpenseModel.defaultExpense(expense: "Clothing", amount: 5.0),
+    ExpenseModel.defaultExpense(
+        expense: "Personal Care & Wellness", amount: 6.0),
+    ExpenseModel.defaultExpense(expense: "Entertainment", amount: 7.0),
+  ];
 // Color((math.Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0)
 
   // List<IncomeModel> _incomes = [];
@@ -53,6 +67,11 @@ class _BudgetPageState extends State<BudgetPage>
             if (state is ExpenseSuccess) {
               _expense = state.expense;
               _totalExpense = state.total;
+
+              state.expense.forEach((exp1) {
+                _defaultExpense
+                    .removeWhere((exp2) => exp1.expense != exp2.expense);
+              });
 
               _completer.complete();
               _completer = Completer();
@@ -143,21 +162,6 @@ class _BudgetPageState extends State<BudgetPage>
                             ),
                             Text.rich(TextSpan(children: [
                               TextSpan(text: _expense[i].ammount.toString()),
-                              // _expense[i].isStatic
-                              //     ? TextSpan(
-                              //         text: "\t(fixed)",
-                              //         style: TextStyle(
-                              //           fontWeight: FontWeight.w200,
-                              //           color: Colors.grey,
-                              //         ),
-                              //       )
-                              //     : TextSpan(
-                              //         text: "\t(adjustable)",
-                              //         style: TextStyle(
-                              //           fontWeight: FontWeight.w200,
-                              //           color: Colors.grey,
-                              //         ),
-                              //       ),
                             ]))
                           ],
                         ),
@@ -212,6 +216,38 @@ class _BudgetPageState extends State<BudgetPage>
                 Text(
                   "Recommended Budget",
                   style: _textTheme.headline6?.copyWith(),
+                ),
+                Divider(),
+                BlocBuilder<ExpenseBloc, ExpenseState>(
+                  builder: (context, state) {
+                    return ListView.separated(
+                      separatorBuilder: (c, i) => SizedBox(height: 2),
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemCount: _expense.length,
+                      itemBuilder: (_, i) => Container(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  height: 20,
+                                  width: 20,
+                                  color: HexColor(_expense[i].color),
+                                ),
+                                SizedBox(width: 3),
+                                Text(_expense[i].expense),
+                              ],
+                            ),
+                            Text.rich(TextSpan(children: [
+                              TextSpan(text: _expense[i].ammount.toString()),
+                            ]))
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),

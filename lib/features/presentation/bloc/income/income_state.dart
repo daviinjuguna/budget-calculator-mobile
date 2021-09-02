@@ -7,6 +7,10 @@ class IncomeInitial extends IncomeState {}
 
 class IncomeLoading extends IncomeState {}
 
+class IncomeCreating extends IncomeState {}
+
+class IncomeDeleting extends IncomeState {}
+
 class IncomeRefreshing extends IncomeState {}
 
 class IncomeUpdting extends IncomeState {}
