@@ -13,6 +13,7 @@ ExpenseModel _$ExpenseModelFromJson(Map<String, dynamic> json) {
     ammount: (json['amount'] as num).toDouble(),
     isStatic: json['static'] as bool,
     color: json['color'] as String,
+    recommended: (json['recommended'] as num).toDouble(),
   );
 }
 
@@ -23,4 +24,5 @@ Map<String, dynamic> _$ExpenseModelToJson(ExpenseModel instance) =>
       'amount': instance.ammount,
       'static': instance.isStatic,
       'color': instance.color,
+      'recommended': instance.recommended,
     };

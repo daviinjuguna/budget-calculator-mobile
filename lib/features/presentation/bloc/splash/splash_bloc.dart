@@ -29,5 +29,8 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
         },
       );
     }
+    if (event is LogoutSplashEvent) {
+      yield SplashLoggedOut();
+    }
   }
 }

@@ -1,6 +1,8 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'dart:math' as math;
+
 part 'expense_model.g.dart';
 
 // {"id":1,"expense":"Housing","amount":7000.0,"static":false,"user":1}
@@ -17,6 +19,8 @@ class ExpenseModel {
 
   @JsonKey(name: 'color')
   final String color;
+  @JsonKey(name: "recommended")
+  final double recommended;
 
   ExpenseModel({
     required this.id,
@@ -24,6 +28,7 @@ class ExpenseModel {
     required this.ammount,
     required this.isStatic,
     required this.color,
+    required this.recommended,
   });
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +44,7 @@ class ExpenseModel {
         expense: expense,
         isStatic: false,
         ammount: amount,
+        recommended: amount,
         color: "#" +
             (Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
                     .withOpacity(1.0)
@@ -56,6 +62,7 @@ class ExpenseModel {
     double? ammount,
     bool? isStatic,
     String? color,
+    double? recommended,
   }) {
     return ExpenseModel(
       id: id ?? this.id,
@@ -63,6 +70,7 @@ class ExpenseModel {
       ammount: ammount ?? this.ammount,
       isStatic: isStatic ?? this.isStatic,
       color: color ?? this.color,
+      recommended: recommended ?? this.recommended,
     );
   }
 
@@ -75,7 +83,8 @@ class ExpenseModel {
         other.expense == expense &&
         other.ammount == ammount &&
         other.isStatic == isStatic &&
-        other.color == color;
+        other.color == color &&
+        other.recommended == recommended;
   }
 
   @override
@@ -84,12 +93,13 @@ class ExpenseModel {
         expense.hashCode ^
         ammount.hashCode ^
         isStatic.hashCode ^
-        color.hashCode;
+        color.hashCode ^
+        recommended.hashCode;
   }
 
   @override
   String toString() {
-    return 'ExpenseModel(id: $id, expense: $expense, ammount: $ammount, isStatic: $isStatic, color: $color)';
+    return 'ExpenseModel(id: $id, expense: $expense, ammount: $ammount, isStatic: $isStatic, color: $color, recommended: $recommended)';
   }
 }
 

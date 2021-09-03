@@ -38,21 +38,47 @@ class _IncomePageState extends State<IncomePage>
   Widget build(BuildContext context) {
     super.build(context);
 
-    late final _textTheme = Theme.of(context).textTheme;
-    late final _colorScheme = Theme.of(context).colorScheme;
-
     return Container(
       key: ValueKey("income"),
       child: BlocConsumer<IncomeBloc, IncomeState>(
         listener: (_, state) {
+          if (state is IncomeInitial) {
+            ScaffoldMessenger.maybeOf(context)?..hideCurrentSnackBar();
+          }
           if (state is IncomeSuccess) {
+            ScaffoldMessenger.maybeOf(context)?..hideCurrentSnackBar();
             _total = state.total;
             _income = state.income;
 
             _completer.complete();
             _completer = Completer();
           }
+          if (state is IncomeUpdting) {
+            ScaffoldMessenger.maybeOf(context)
+              ?..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  duration: Duration(seconds: 60),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(5),
+                    topRight: Radius.circular(5),
+                  )),
+                  content: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("LOADING..."),
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(
+                            Theme.of(context).colorScheme.background),
+                      )
+                    ],
+                  ),
+                ),
+              );
+          }
           if (state is IncomeError) {
+            ScaffoldMessenger.maybeOf(context)?..hideCurrentSnackBar();
             _completer.complete();
             _completer = Completer();
           }

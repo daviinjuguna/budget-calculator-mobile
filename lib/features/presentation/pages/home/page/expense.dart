@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sortika_budget_calculator/features/domain/model/expense_model.dart';
 import 'package:sortika_budget_calculator/features/presentation/bloc/expense/expense_bloc.dart';
-import 'package:sortika_budget_calculator/features/presentation/components/custom_switch.dart';
 import 'package:sortika_budget_calculator/features/presentation/pages/home/components/expense_dialog.dart';
 
 class ExpensePage extends StatefulWidget {
@@ -50,7 +49,35 @@ class _ExpensePageState extends State<ExpensePage> {
       key: ValueKey("expense"),
       child: BlocConsumer<ExpenseBloc, ExpenseState>(
         listener: (context, state) {
+          if (state is ExpenseInitial) {
+            ScaffoldMessenger.maybeOf(context)?..hideCurrentSnackBar();
+          }
+          if (state is ExpenseUpdating) {
+            ScaffoldMessenger.maybeOf(context)
+              ?..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  duration: Duration(seconds: 60),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(5),
+                    topRight: Radius.circular(5),
+                  )),
+                  content: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("LOADING..."),
+                      CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation(
+                            Theme.of(context).colorScheme.background),
+                      )
+                    ],
+                  ),
+                ),
+              );
+          }
           if (state is ExpenseSuccess) {
+            ScaffoldMessenger.maybeOf(context)?..hideCurrentSnackBar();
             _expense = state.expense;
             _totalExpense = state.total;
 
@@ -64,6 +91,7 @@ class _ExpensePageState extends State<ExpensePage> {
             _completer = Completer();
           }
           if (state is ExpenseError) {
+            ScaffoldMessenger.maybeOf(context)?..hideCurrentSnackBar();
             _completer.complete();
             _completer = Completer();
           }
@@ -97,24 +125,22 @@ class _ExpensePageState extends State<ExpensePage> {
                           //         total: _total, list: _income, model: value));
                         }
                       }),
-                      child: Text("Add Expense"),
+                      child: Text("Add Expense From Category"),
                     ),
-                    // TextButton(
-                    //     onPressed: () => showDialog<ExpenseModel?>(
-                    //           context: context,
-                    //           builder: (builder) => SuggestedDialog(
-                    //             expense: _defaultExpense,
-                    //           ),
-                    //         ).then((value) {
-                    //           if (value != null) {
-                    //             BlocProvider.of<ExpenseBloc>(context).add(
-                    //                 CreateExpenseEvent(
-                    //                     total: _totalExpense,
-                    //                     list: _expense,
-                    //                     model: value));
-                    //           }
-                    //         }),
-                    //     child: Text("Add Suggested Expense"))
+                    TextButton(
+                        onPressed: () => showDialog<ExpenseModel?>(
+                              context: context,
+                              builder: (builder) => ExpenseDialog(),
+                            ).then((value) {
+                              if (value != null) {
+                                BlocProvider.of<ExpenseBloc>(context).add(
+                                    CreateExpenseEvent(
+                                        total: _totalExpense,
+                                        list: _expense,
+                                        model: value));
+                              }
+                            }),
+                        child: Text("Add New Expense"))
                   ],
                 ),
               ),

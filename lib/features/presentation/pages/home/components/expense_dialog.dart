@@ -39,16 +39,16 @@ class _CreateDialogState extends State<ExpenseDialog> {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // TextField(
-          //   keyboardType: TextInputType.text,
-          //   controller: _title,
-          //   decoration: InputDecoration(
-          //     labelText: "Expense",
-          //   ),
-          // ),
-          // SizedBox(
-          //   height: 5,
-          // ),
+          TextField(
+            keyboardType: TextInputType.text,
+            controller: _title,
+            decoration: InputDecoration(
+              labelText: "Expense",
+            ),
+          ),
+          SizedBox(
+            height: 5,
+          ),
           TextField(
             keyboardType: TextInputType.number,
             inputFormatters: [],
@@ -119,6 +119,7 @@ class _CreateDialogState extends State<ExpenseDialog> {
             Navigator.of(context).pop(ExpenseModel(
               id: 1, //! does not matter any value
               expense: _title.text.trim(),
+              recommended: 0,
               ammount: double.tryParse(_amount.text.trim())!,
               color: "#" +
                   (Color((math.Random().nextDouble() * 0xFFFFFF).toInt())

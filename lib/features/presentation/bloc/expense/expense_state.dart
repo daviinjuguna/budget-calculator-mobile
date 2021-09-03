@@ -34,3 +34,5 @@ class ExpenseSuccess extends ExpenseState {
 class ExpenseError extends ExpenseState {}
 
 class ExpenseUpdating extends ExpenseState {}
+
+class ExpenseRefreshing extends ExpenseState {}
