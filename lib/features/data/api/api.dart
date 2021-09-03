@@ -37,7 +37,7 @@ class ApiImpl implements Api {
 
   //*just add 's' to http to be secured url
   Uri appUrl(String url, [Map<String, dynamic>? queryParameters]) =>
-      Uri.https(BASE_URL, url, queryParameters);
+      Uri.http(BASE_URL, url, queryParameters);
 
   @override
   Future<http.Response> login(

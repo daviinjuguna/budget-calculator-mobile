@@ -121,13 +121,6 @@ class _CreateDialogState extends State<ExpenseDialog> {
               expense: _title.text.trim(),
               recommended: 0,
               ammount: double.tryParse(_amount.text.trim())!,
-              color: "#" +
-                  (Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
-                          .withOpacity(1.0)
-                          .value
-                          .toRadixString(16)
-                          .toUpperCase())
-                      .lastChars(6),
               isStatic: _isStatic,
             ));
           },

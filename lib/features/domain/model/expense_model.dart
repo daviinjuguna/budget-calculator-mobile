@@ -1,6 +1,3 @@
-import 'dart:math' as math;
-
-import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'expense_model.g.dart';
@@ -16,9 +13,6 @@ class ExpenseModel {
   final double ammount;
   @JsonKey(name: "static")
   final bool isStatic;
-
-  @JsonKey(name: 'color')
-  final String color;
   @JsonKey(name: "recommended")
   final double recommended;
 
@@ -27,32 +21,12 @@ class ExpenseModel {
     required this.expense,
     required this.ammount,
     required this.isStatic,
-    required this.color,
     required this.recommended,
   });
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) {
     return _$ExpenseModelFromJson(json);
   }
-
-  factory ExpenseModel.defaultExpense({
-    required String expense,
-    required double amount,
-  }) =>
-      ExpenseModel(
-        id: 1,
-        expense: expense,
-        isStatic: false,
-        ammount: amount,
-        recommended: amount,
-        color: "#" +
-            (Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
-                    .withOpacity(1.0)
-                    .value
-                    .toRadixString(16)
-                    .toUpperCase())
-                .lastChars(6),
-      );
 
   Map<String, dynamic> toJson() => _$ExpenseModelToJson(this);
 
@@ -69,7 +43,6 @@ class ExpenseModel {
       expense: expense ?? this.expense,
       ammount: ammount ?? this.ammount,
       isStatic: isStatic ?? this.isStatic,
-      color: color ?? this.color,
       recommended: recommended ?? this.recommended,
     );
   }
@@ -83,7 +56,6 @@ class ExpenseModel {
         other.expense == expense &&
         other.ammount == ammount &&
         other.isStatic == isStatic &&
-        other.color == color &&
         other.recommended == recommended;
   }
 
@@ -93,13 +65,12 @@ class ExpenseModel {
         expense.hashCode ^
         ammount.hashCode ^
         isStatic.hashCode ^
-        color.hashCode ^
         recommended.hashCode;
   }
 
   @override
   String toString() {
-    return 'ExpenseModel(id: $id, expense: $expense, ammount: $ammount, isStatic: $isStatic, color: $color, recommended: $recommended)';
+    return 'ExpenseModel(id: $id, expense: $expense, ammount: $ammount, isStatic: $isStatic,  recommended: $recommended)';
   }
 }
 

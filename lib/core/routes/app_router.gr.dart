@@ -38,7 +38,7 @@ class AppRouter extends _i1.RootStackRouter {
         builder: (_) {
           return const _i5.HomePage();
         }),
-    Budget.name: (routeData) => _i1.MaterialPageX<dynamic>(
+    Planner.name: (routeData) => _i1.MaterialPageX<dynamic>(
         routeData: routeData,
         builder: (_) {
           return const _i6.BudgetPage();
@@ -65,7 +65,7 @@ class AppRouter extends _i1.RootStackRouter {
         _i1.RouteConfig(SplashPageRoute.name, path: '/'),
         _i1.RouteConfig(LoginPageRoute.name, path: 'login'),
         _i1.RouteConfig(HomePageRoute.name, path: 'home', children: [
-          _i1.RouteConfig(Budget.name, path: ''),
+          _i1.RouteConfig(Planner.name, path: ''),
           _i1.RouteConfig(Income.name, path: 'income'),
           _i1.RouteConfig(Expense.name, path: 'expense'),
           _i1.RouteConfig(Profile.name, path: 'profile'),
@@ -101,10 +101,10 @@ class HomePageRoute extends _i1.PageRouteInfo {
   static const String name = 'HomePageRoute';
 }
 
-class Budget extends _i1.PageRouteInfo {
-  const Budget() : super(name, path: '');
+class Planner extends _i1.PageRouteInfo {
+  const Planner() : super(name, path: '');
 
-  static const String name = 'Budget';
+  static const String name = 'Planner';
 }
 
 class Income extends _i1.PageRouteInfo {

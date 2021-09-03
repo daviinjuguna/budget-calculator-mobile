@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
       ],
       child: AutoTabsScaffold(
         routes: [
-          Budget(),
+          Planner(),
           Income(),
           Expense(),
           Profile(),
@@ -58,7 +58,8 @@ class _HomePageState extends State<HomePage> {
           backgroundColor: Colors.transparent,
           title: Text(
             context.topRoute.name,
-            style: _textTheme.headline4?.copyWith(color: _colorScheme.primary),
+            style: _textTheme.headline4
+                ?.copyWith(color: Colors.black, fontWeight: FontWeight.w600),
           ),
         ),
         bottomNavigationBuilder: (context, router) => BottomNavigationBar(
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
           // unselectedItemColor: Colors.white70,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: Icon(Icons.price_check), label: "Budget"),
+                icon: Icon(Icons.price_check), label: "Planner"),
             BottomNavigationBarItem(
                 icon: Icon(Icons.attach_money), label: "Income"),
             BottomNavigationBarItem(
