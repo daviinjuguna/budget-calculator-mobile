@@ -49,8 +49,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         (expense) => ExpenseSuccess(
           total: event.total + expense.ammount,
           expense: [
-            ...[expense],
-            ...event.list
+            ...event.list,
+            ...[expense]
           ],
         ),
       );

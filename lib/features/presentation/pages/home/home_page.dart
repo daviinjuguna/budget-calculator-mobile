@@ -43,6 +43,7 @@ class _HomePageState extends State<HomePage> {
           Expense(),
           Profile(),
         ],
+        animationDuration: Duration(milliseconds: 200),
         animationCurve: Curves.easeInCubic,
         builder: (context, child, animation) => Scaffold(
           body: FadeTransition(

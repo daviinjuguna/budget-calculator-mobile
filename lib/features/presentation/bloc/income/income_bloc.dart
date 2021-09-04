@@ -56,8 +56,8 @@ class IncomeBloc extends Bloc<IncomeEvent, IncomeState> {
         (income) => IncomeSuccess(
           total: event.total + income.amount,
           income: [
-            ...[income],
-            ...event.list
+            ...event.list,
+            ...[income]
           ],
         ),
       );

@@ -25,3 +25,11 @@ final kCardGradient = LinearGradient(colors: [
   HexColor("#E3D8FF"),
   HexColor("#E2D8FD")
 ]);
+
+final kGreenGradient = LinearGradient(colors: [
+  HexColor("#E9FFF9"),
+  HexColor("#DEFFF6"),
+  HexColor("#D5FFF3"),
+  HexColor("#C8FFEF"),
+  HexColor("#B6FAE6")
+]);
