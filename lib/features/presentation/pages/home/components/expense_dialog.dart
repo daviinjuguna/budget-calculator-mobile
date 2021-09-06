@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sortika_budget_calculator/features/domain/model/expense_model.dart';
-import 'package:sortika_budget_calculator/features/presentation/components/custom_switch.dart';
 
-import 'dart:math' as math;
+import 'package:sortika_budget_calculator/features/domain/model/expense_model.dart';
 
 class ExpenseDialog extends StatefulWidget {
   const ExpenseDialog({Key? key, this.expense}) : super(key: key);
@@ -13,14 +11,26 @@ class ExpenseDialog extends StatefulWidget {
 }
 
 class _CreateDialogState extends State<ExpenseDialog> {
+  late final List<ExpenseType> _type = [
+    ExpenseType(name: "Static", isStatic: true),
+    ExpenseType(name: "Dynamic", isStatic: false)
+  ];
+
   late TextEditingController _title;
   late TextEditingController _amount;
-  bool _isStatic = false;
+  late ExpenseType _expenseType;
+  // late final
   @override
   void initState() {
     _amount = TextEditingController(text: widget.expense?.ammount.toString());
     _title = TextEditingController(text: widget.expense?.expense);
-    _isStatic = widget.expense?.isStatic ?? false;
+    if (widget.expense != null) {
+      _expenseType = _type.singleWhere(
+          (element) => element.isStatic == widget.expense!.isStatic);
+      return;
+    } else {
+      _expenseType = _type.singleWhere((element) => !element.isStatic);
+    }
     super.initState();
   }
 
@@ -60,13 +70,19 @@ class _CreateDialogState extends State<ExpenseDialog> {
           SizedBox(
             height: 5,
           ),
-          CustomSwitch(
-              value: _isStatic,
-              onChanged: (value) {
-                setState(() {
-                  _isStatic = value;
-                });
-              }),
+          DropdownButtonFormField<ExpenseType>(
+            decoration: InputDecoration(labelText: "Choose type"),
+            value: _expenseType,
+            onChanged: (value) {
+              setState(() {
+                _expenseType = value!;
+              });
+            },
+            items: _type
+                .map((e) => DropdownMenuItem<ExpenseType>(
+                    child: Text(e.name), value: e))
+                .toList(),
+          )
         ],
       ),
       actions: [
@@ -78,7 +94,7 @@ class _CreateDialogState extends State<ExpenseDialog> {
         ),
         TextButton(
           onPressed: () {
-            if (_isStatic) {
+            if (_expenseType.isStatic) {
               if (_amount.text.isEmpty || _title.text.isEmpty) {
                 ScaffoldMessenger.maybeOf(context)
                   ?..hideCurrentSnackBar()
@@ -112,7 +128,7 @@ class _CreateDialogState extends State<ExpenseDialog> {
               Navigator.of(context).pop(widget.expense?.copyWith(
                 expense: _title.text.trim(),
                 ammount: double.tryParse(_amount.text.trim()),
-                isStatic: _isStatic,
+                isStatic: _expenseType.isStatic,
               ));
               return;
             }
@@ -121,7 +137,7 @@ class _CreateDialogState extends State<ExpenseDialog> {
               expense: _title.text.trim(),
               recommended: 0,
               ammount: double.tryParse(_amount.text.trim())!,
-              isStatic: _isStatic,
+              isStatic: _expenseType.isStatic,
             ));
           },
           child: Text(
@@ -132,4 +148,28 @@ class _CreateDialogState extends State<ExpenseDialog> {
       ],
     );
   }
+}
+
+class ExpenseType {
+  final String name;
+  final bool isStatic;
+  ExpenseType({
+    required this.name,
+    required this.isStatic,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is ExpenseType &&
+        other.name == name &&
+        other.isStatic == isStatic;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ isStatic.hashCode;
+
+  @override
+  String toString() => 'ExpenseType(name: $name, isStatic: $isStatic)';
 }

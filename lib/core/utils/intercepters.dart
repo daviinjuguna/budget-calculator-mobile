@@ -5,8 +5,8 @@ import 'package:sortika_budget_calculator/features/data/datasource/local.dart';
 class HttpInterceptors implements InterceptorContract {
   @override
   Future<RequestData> interceptRequest({required RequestData data}) async {
-    final _token = await getIt<LocalDataSource>().fetchTokens();
     try {
+      final _token = await getIt<LocalDataSource>().fetchTokens();
       data.headers["Content-Type"] = "application/json";
       data.headers["Accept"] = "application/json";
       if (_token != null) data.headers["Authorization"] = "Token $_token";

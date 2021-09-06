@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sortika_budget_calculator/features/domain/model/income_model.dart';
@@ -86,8 +87,68 @@ class _IncomePageState extends State<IncomePage>
           },
         )
       ],
-      child: Container(
-        child: Column(),
+      child: RefreshIndicator(
+        onRefresh: () {
+          BlocProvider.of<IncomeBloc>(context).add(RefreshIncomeEvent());
+          return _completer.future;
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              Container(
+                alignment: Alignment.topCenter,
+                height: 200,
+                child: BlocBuilder<IncomeBloc, IncomeState>(
+                  builder: (context, state) {
+                    if (state is IncomeLoading) {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return PieChart(
+                      PieChartData(
+                        sections: _income
+                            .map(
+                              (income) => PieChartSectionData(
+                                value: _getPercentage(income.amount, _total),
+                                showTitle: true,
+                                title: income.income +
+                                    "\n" +
+                                    "${_getPercentage(income.amount, _total).toStringAsFixed(1)}%",
+                              ),
+                            )
+                            .toList(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Tansactions"),
+                  IconButton(
+                    onPressed: () => showDialog<IncomeModel?>(
+                        context: context,
+                        builder: (builder) => CreateDialog()).then((value) {
+                      if (value != null) {
+                        BlocProvider.of<IncomeBloc>(context).add(
+                            CreateIncomeEvent(
+                                list: _income, model: value, total: _total));
+                      }
+                    }),
+                    icon: Icon(Icons.add),
+                    color: Colors.black,
+                  )
+                ],
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -95,3 +156,5 @@ class _IncomePageState extends State<IncomePage>
   @override
   bool get wantKeepAlive => true;
 }
+
+double _getPercentage(double value, double total) => (value / total) * 100.0;

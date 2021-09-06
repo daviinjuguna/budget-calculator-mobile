@@ -44,6 +44,8 @@ class _BudgetPageState extends State<BudgetPage>
   bool get wantKeepAlive => true;
   List<ExpenseModel> _expense = [];
   List<IncomeModel> _income = [];
+  double _totalIncome = 0.0;
+  double _totalExpense = 0.0;
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -58,6 +60,10 @@ class _BudgetPageState extends State<BudgetPage>
               _expense = state.expense;
               _completer.complete();
               _completer = Completer();
+
+              setState(() {
+                _totalExpense = state.total;
+              });
             }
             if (state is ExpenseError) {
               _completer.complete();
@@ -71,6 +77,10 @@ class _BudgetPageState extends State<BudgetPage>
               _income = state.income;
               _completer.complete();
               _completer = Completer();
+
+              setState(() {
+                _totalIncome = state.total;
+              });
             }
             if (state is IncomeError) {
               _completer.complete();
@@ -79,386 +89,386 @@ class _BudgetPageState extends State<BudgetPage>
           },
         )
       ],
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-        child: RefreshIndicator(
-          onRefresh: () {
-            BlocProvider.of<IncomeBloc>(context).add(RefreshIncomeEvent());
-            BlocProvider.of<ExpenseBloc>(context).add(RefreshExpenseEvent());
-            return _completer.future;
-          },
-          child: SingleChildScrollView(
-            physics: AlwaysScrollableScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: 20),
-                Row(
+      child: RefreshIndicator(
+        onRefresh: () {
+          BlocProvider.of<IncomeBloc>(context).add(RefreshIncomeEvent());
+          BlocProvider.of<ExpenseBloc>(context).add(RefreshExpenseEvent());
+          return _completer.future;
+        },
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+          physics: AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: Card(
+                      elevation: 0,
+                      child: Container(
+                        height: _cardWidth,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          gradient: kCardGradient,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Total Income",
+                              style: TextStyle(
+                                color: kPurpleColor,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            BlocBuilder<IncomeBloc, IncomeState>(
+                              builder: (context, state) {
+                                String _total = "0.0";
+                                if (state is IncomeLoading) {
+                                  _total = "Loading";
+                                }
+                                if (state is IncomeSuccess) {
+                                  _total =
+                                      "KES " + state.total.toStringAsFixed(1);
+                                }
+                                return Text(
+                                  _total,
+                                  style: TextStyle(
+                                    color: kPurpleColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Card(
+                      elevation: 0,
+                      child: Container(
+                        height: _cardWidth,
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Total Expense",
+                              style: TextStyle(
+                                color: kPurpleColor,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            BlocBuilder<ExpenseBloc, ExpenseState>(
+                              builder: (context, state) {
+                                String _total = "0.0";
+                                if (state is ExpenseLoading) {
+                                  _total = "Loading";
+                                }
+                                if (state is ExpenseSuccess) {
+                                  _total =
+                                      "KES " + state.total.toStringAsFixed(1);
+                                }
+                                return Text(
+                                  _total,
+                                  style: TextStyle(
+                                    color: kPurpleColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: kCardGradient,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Budget Calculator",
+                style: _textTheme.headline6?.copyWith(),
+              ),
+              SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                height: 80,
+                padding: EdgeInsets.all(10),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Card(
-                        elevation: 0,
-                        child: Container(
-                          height: _cardWidth,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            gradient: kCardGradient,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "Total Income",
-                                style: TextStyle(
-                                  color: kPurpleColor,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              BlocBuilder<IncomeBloc, IncomeState>(
-                                builder: (context, state) {
-                                  String _total = "0.0";
-                                  if (state is IncomeLoading) {
-                                    _total = "Loading";
-                                  }
-                                  if (state is IncomeSuccess) {
-                                    _total =
-                                        "KES " + state.total.toStringAsFixed(1);
-                                  }
-                                  return Text(
-                                    _total,
-                                    style: TextStyle(
-                                      color: kPurpleColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Card(
-                        elevation: 0,
-                        child: Container(
-                          height: _cardWidth,
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(
-                                "Total Expense",
-                                style: TextStyle(
-                                  color: kPurpleColor,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                              BlocBuilder<ExpenseBloc, ExpenseState>(
-                                builder: (context, state) {
-                                  String _total = "0.0";
-                                  if (state is ExpenseLoading) {
-                                    _total = "Loading";
-                                  }
-                                  if (state is ExpenseSuccess) {
-                                    _total =
-                                        "KES " + state.total.toStringAsFixed(1);
-                                  }
-                                  return Text(
-                                    _total,
-                                    style: TextStyle(
-                                      color: kPurpleColor,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                          decoration: BoxDecoration(
-                            gradient: kCardGradient,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                    ),
+                    Text("Monthly Budget"),
+                    Text(
+                      "KES 100000",
+                      style: _textTheme.headline6
+                          ?.copyWith(fontWeight: FontWeight.w600),
+                    )
                   ],
                 ),
-                SizedBox(height: 20),
-                Text(
-                  "Budget Calculator",
-                  style: _textTheme.headline6?.copyWith(),
+                decoration: BoxDecoration(
+                  gradient: kCardGradient,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  height: 80,
-                  padding: EdgeInsets.all(10),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Monthly Budget"),
-                      Text(
-                        "KES 100000",
-                        style: _textTheme.headline6
-                            ?.copyWith(fontWeight: FontWeight.w600),
-                      )
-                    ],
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: kCardGradient,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "Enter income streams to calculate your budget",
-                  style: TextStyle(fontWeight: FontWeight.w300),
-                ),
-                SizedBox(height: 20),
-                BlocBuilder<IncomeBloc, IncomeState>(
-                  builder: (context, state) {
-                    double _total = 0.0;
-                    if (state is IncomeSuccess) {
-                      _total = state.total;
-                    }
-                    return Container(
-                      height: 100,
-                      child: ListView.separated(
-                        separatorBuilder: (_, __) => SizedBox(width: 10),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _income.length + 1,
-                        itemBuilder: (_, i) {
-                          if (i == _income.length)
-                            return GestureDetector(
-                              onTap: () => showDialog<IncomeModel?>(
-                                      context: context,
-                                      builder: (builder) => CreateDialog())
-                                  .then((value) {
-                                if (value != null) {
-                                  BlocProvider.of<IncomeBloc>(context).add(
-                                      CreateIncomeEvent(
-                                          list: _income,
-                                          model: value,
-                                          total: _total));
-                                }
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                alignment: Alignment.center,
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: kPurpleColor,
-                                      ),
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Enter income streams to calculate your budget",
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+              SizedBox(height: 20),
+              BlocBuilder<IncomeBloc, IncomeState>(
+                builder: (context, state) {
+                  double _total = 0.0;
+                  if (state is IncomeSuccess) {
+                    _total = state.total;
+                  }
+                  return Container(
+                    height: 100,
+                    child: ListView.separated(
+                      separatorBuilder: (_, __) => SizedBox(width: 10),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _income.length + 1,
+                      itemBuilder: (_, i) {
+                        if (i == _income.length)
+                          return GestureDetector(
+                            onTap: () => showDialog<IncomeModel?>(
+                                    context: context,
+                                    builder: (builder) => CreateDialog())
+                                .then((value) {
+                              if (value != null) {
+                                BlocProvider.of<IncomeBloc>(context).add(
+                                    CreateIncomeEvent(
+                                        list: _income,
+                                        model: value,
+                                        total: _total));
+                              }
+                            }),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              alignment: Alignment.center,
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: kPurpleColor,
                                     ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Add new income",
-                                      style: TextStyle(
-                                          color: kPurpleColor,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: kCardGradient,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                            );
-                          return Container(
-                            width: MediaQuery.of(context).size.width * 0.6,
-                            alignment: Alignment.center,
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.monetization_on,
-                                    color: kPurpleColor,
                                   ),
-                                ),
-                                SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      _income[i].income,
-                                      style: TextStyle(
-                                          color: kPurpleColor,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                    SizedBox(height: 10),
-                                    Text("KES ${_income[i].amount}")
-                                  ],
-                                ),
-                                Spacer(),
-                                IconButton(
-                                    onPressed: () => showDialog<IncomeModel?>(
-                                          context: context,
-                                          builder: (builder) => CreateDialog(
-                                            income: _income[i],
-                                          ),
-                                        ).then((value) {
-                                          if (value != null) {
-                                            BlocProvider.of<IncomeBloc>(context)
-                                                .add(EditIncomeEvent(
-                                              list: _income,
-                                              model: value,
-                                              initial: _income[i],
-                                              index: i,
-                                              total: _total,
-                                            ));
-                                          }
-                                        }),
-                                    icon: Icon(Icons.edit))
-                              ],
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: kCardGradient,
-                              borderRadius: BorderRadius.circular(10),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Add new income",
+                                    style: TextStyle(
+                                        color: kPurpleColor,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: kCardGradient,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           );
-                        },
-                      ),
-                    );
-                  },
-                ),
-                SizedBox(height: 20),
-                Text(
-                  "Based on your budget, this is what we recommend",
-                  style: TextStyle(fontWeight: FontWeight.w300),
-                ),
-                SizedBox(height: 20),
-                BlocBuilder<ExpenseBloc, ExpenseState>(
-                  builder: (context, state) {
-                    double _total = 0.0;
-                    if (state is ExpenseSuccess) {
-                      _total = state.total;
-                    }
-                    return Container(
-                      height: 100,
-                      child: ListView.separated(
-                        separatorBuilder: (_, __) => SizedBox(width: 10),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _expense.length + 1,
-                        itemBuilder: (_, i) {
-                          if (i == _expense.length)
-                            return GestureDetector(
-                              onTap: () => showDialog<ExpenseModel?>(
-                                      context: context,
-                                      builder: (builder) => ExpenseDialog())
-                                  .then((value) {
-                                if (value != null) {
-                                  BlocProvider.of<ExpenseBloc>(context).add(
-                                      CreateExpenseEvent(
-                                          list: _expense,
-                                          model: value,
-                                          total: _total));
-                                }
-                              }),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width * 0.6,
-                                alignment: Alignment.center,
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(
-                                        Icons.add,
-                                        color: kPurpleColor,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Text(
-                                      "Add new Expense",
-                                      style: TextStyle(
-                                          color: kGreen,
-                                          fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: kGreenGradient,
-                                  borderRadius: BorderRadius.circular(10),
+                        return Container(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.monetization_on,
+                                  color: kPurpleColor,
                                 ),
                               ),
-                            );
-                          return Container(
-                            width: MediaQuery.of(context).size.width * 0.6,
-                            alignment: Alignment.center,
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Icon(
-                                    Icons.monetization_on,
-                                    color: kGreen,
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _income[i].income,
+                                    style: TextStyle(
+                                        color: kPurpleColor,
+                                        fontWeight: FontWeight.w600),
                                   ),
-                                ),
-                                SizedBox(width: 10),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      _expense[i].expense,
-                                      style: TextStyle(
-                                          color: kGreen,
-                                          fontWeight: FontWeight.w600),
+                                  SizedBox(height: 10),
+                                  Text("KES ${_income[i].amount}")
+                                ],
+                              ),
+                              Spacer(),
+                              IconButton(
+                                  onPressed: () => showDialog<IncomeModel?>(
+                                        context: context,
+                                        builder: (builder) => CreateDialog(
+                                          income: _income[i],
+                                        ),
+                                      ).then((value) {
+                                        if (value != null) {
+                                          BlocProvider.of<IncomeBloc>(context)
+                                              .add(EditIncomeEvent(
+                                            list: _income,
+                                            model: value,
+                                            initial: _income[i],
+                                            index: i,
+                                            total: _total,
+                                          ));
+                                        }
+                                      }),
+                                  icon: Icon(Icons.edit))
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: kCardGradient,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              Text(
+                "Based on your budget, this is what we recommend",
+                style: TextStyle(fontWeight: FontWeight.w300),
+              ),
+              SizedBox(height: 20),
+              BlocBuilder<ExpenseBloc, ExpenseState>(
+                builder: (context, state) {
+                  double _total = 0.0;
+                  if (state is ExpenseSuccess) {
+                    _total = state.total;
+                  }
+                  return Container(
+                    height: 100,
+                    child: ListView.separated(
+                      separatorBuilder: (_, __) => SizedBox(width: 10),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _expense.length + 1,
+                      itemBuilder: (_, i) {
+                        if (i == _expense.length)
+                          return GestureDetector(
+                            onTap: () => showDialog<ExpenseModel?>(
+                                    context: context,
+                                    builder: (builder) => ExpenseDialog())
+                                .then((value) {
+                              if (value != null) {
+                                BlocProvider.of<ExpenseBloc>(context).add(
+                                    CreateExpenseEvent(
+                                        list: _expense,
+                                        model: value,
+                                        total: _total));
+                              }
+                            }),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              alignment: Alignment.center,
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: kPurpleColor,
                                     ),
-                                    SizedBox(height: 10),
-                                    Text("KES ${_expense[i].ammount}")
-                                  ],
-                                ),
-                                Spacer(),
-                                IconButton(
-                                    onPressed: () => showDialog<ExpenseModel?>(
-                                          context: context,
-                                          builder: (builder) => ExpenseDialog(
-                                            expense: _expense[i],
-                                          ),
-                                        ).then((value) {
-                                          if (value != null) {
-                                            BlocProvider.of<ExpenseBloc>(
-                                                    context)
-                                                .add(EditExpenseEvent(
-                                              list: _expense,
-                                              model: value,
-                                              initial: _expense[i],
-                                              index: i,
-                                              total: _total,
-                                            ));
-                                          }
-                                        }),
-                                    icon: Icon(Icons.edit))
-                              ],
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: kGreenGradient,
-                              borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    "Add new Expense",
+                                    style: TextStyle(
+                                        color: kGreen,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ],
+                              ),
+                              decoration: BoxDecoration(
+                                gradient: kGreenGradient,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                        return Container(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          alignment: Alignment.center,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Icon(
+                                  Icons.monetization_on,
+                                  color: kGreen,
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    _expense[i].expense,
+                                    style: TextStyle(
+                                        color: kGreen,
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                  SizedBox(height: 10),
+                                  !_expense[i].isStatic
+                                      ? Text(
+                                          "KES ${_getAmmountFromPercentage(_expense[i].recommended, _totalIncome).toStringAsFixed(1)} (${_expense[i].recommended})")
+                                      : Text("KES ${_expense[i].ammount}")
+                                ],
+                              ),
+                              Spacer(),
+                              IconButton(
+                                  onPressed: () => showDialog<ExpenseModel?>(
+                                        context: context,
+                                        builder: (builder) => ExpenseDialog(
+                                          expense: _expense[i],
+                                        ),
+                                      ).then((value) {
+                                        if (value != null) {
+                                          BlocProvider.of<ExpenseBloc>(context)
+                                              .add(EditExpenseEvent(
+                                            list: _expense,
+                                            model: value,
+                                            initial: _expense[i],
+                                            index: i,
+                                            total: _total,
+                                          ));
+                                        }
+                                      }),
+                                  icon: Icon(Icons.edit))
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: kGreenGradient,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ),
