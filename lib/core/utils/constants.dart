@@ -10,3 +10,25 @@ const NAME_REGEX = r"^[a-zA-Z]{2,30}$";
 const PHONE_REGEX = r'^\+?1?\d{9,14}$';
 
 const MPESA = "MPESA";
+
+// void main() {
+// final _const ="You have received Ksh600.00,";
+// final _extracted = RegExp(REG_EX, multiLine: true);
+
+// print(_extracted);
+//  print(_extracted  );
+// }
+
+// ///*SOLUTION
+// void main() {
+//   final _const = "You have received Ksh6,000.91, remaining is Ksh5,000.00";
+//   final _extractKash = RegExp(REG_EX, multiLine: true);
+//   final _kash = _extractKash.stringMatch(_const);
+//   final _num = _kash?.replaceAll(RegExp('[^0-9.]'), '');
+
+//   print(_extractKash);
+//   print(_kash);
+//   print(_num);
+// }
+
+// const REG_EX = r'(\Ksh[0-9,]+(\.[0-9]{2})?)';
