@@ -3,23 +3,20 @@ const ACCESS_TOKENS = "token";
 const DEVELOPMENT = 'dev';
 const PRODUCTION = 'prod';
 
-const BASE_URL = "budget-c.herokuapp.com";
+const BASE_URL = "budget-f.herokuapp.com";
+// const BASE_URL = "192.168.43.22:9000";
 
 const PASS_REGEX = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$';
 const NAME_REGEX = r"^[a-zA-Z]{2,30}$";
 const PHONE_REGEX = r'^\+?1?\d{9,14}$';
 
 const MPESA = "MPESA";
+const RECEIVE = "received";
 
-// void main() {
-// final _const ="You have received Ksh600.00,";
-// final _extracted = RegExp(REG_EX, multiLine: true);
+const BOUGHT = "bought";
+const SENT = "sent";
+const WITHDRAW = "Withdraw";
 
-// print(_extracted);
-//  print(_extracted  );
-// }
-
-// ///*SOLUTION
 // void main() {
 //   final _const = "You have received Ksh6,000.91, remaining is Ksh5,000.00";
 //   final _extractKash = RegExp(REG_EX, multiLine: true);

@@ -15,7 +15,7 @@ import 'package:sortika_budget_calculator/features/presentation/pages/splash/spl
       page: HomePage,
       path: "home",
       children: [
-        MaterialRoute(page: BudgetPage, path: "", name: "Budget"),
+        MaterialRoute(page: BudgetPage, path: "", name: "Planner"),
         MaterialRoute(page: IncomePage, path: "income", name: "Income"),
         MaterialRoute(page: ExpensePage, path: "expense", name: "Expense"),
         MaterialRoute(page: ProfilePage, path: "profile", name: "Profile"),

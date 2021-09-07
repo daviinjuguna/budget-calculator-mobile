@@ -36,7 +36,7 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
       });
     }
     if (event is RefreshExpenseEvent) {
-      yield ExpenseUpdating();
+      yield ExpenseRefreshing();
       final _res = await _get.call(NoParams());
       yield _res.fold((l) => ExpenseError(),
           (r) => ExpenseSuccess(expense: r.expense, total: r.total!));
@@ -49,8 +49,8 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
         (expense) => ExpenseSuccess(
           total: event.total + expense.ammount,
           expense: [
-            ...[expense],
-            ...event.list
+            ...event.list,
+            ...[expense]
           ],
         ),
       );

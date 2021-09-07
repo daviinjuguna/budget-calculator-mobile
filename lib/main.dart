@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'package:sortika_budget_calculator/features/presentation/bloc/splash/spla
 import 'package:telephony/telephony.dart';
 
 import 'core/routes/app_router.gr.dart';
+import 'features/data/datasource/local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,34 +23,8 @@ void main() async {
     yield LicenseEntryWithLineBreaks(['google_fonts'], license);
   });
   await configureInjection(environment: DEVELOPMENT);
-  handleSms();
+  // handleSms();
   runApp(MyApp());
-}
-
-void handleSms() {
-  Telephony.instance
-    ..listenIncomingSms(
-      onNewMessage: (SmsMessage sms) {
-        print(sms.address);
-        print(sms.body);
-        print(sms.subject);
-        print(sms.type);
-      },
-      listenInBackground: false,
-    )
-    ..getInboxSms(
-      columns: [SmsColumn.ADDRESS, SmsColumn.BODY],
-      filter: SmsFilter.where(SmsColumn.ADDRESS).equals(MPESA),
-      sortOrder: [
-        OrderBy(SmsColumn.ADDRESS, sort: Sort.ASC),
-        OrderBy(SmsColumn.BODY)
-      ],
-    ).then((sms) {
-      sms.forEach((element) {
-        print(element.address);
-        print(element.body);
-      });
-    });
 }
 
 class MyApp extends StatelessWidget {
@@ -60,41 +36,61 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [BlocProvider(create: (_) => getIt<SplashBloc>())],
-      child: MaterialApp.router(
-        routeInformationParser: _appRouter.defaultRouteParser(),
-        routerDelegate: _appRouter.delegate(),
-        title: 'Budget Calculator',
-        theme: ThemeData(
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          primarySwatch: Colors.green,
-          brightness: Brightness.light,
-          textTheme: defaultTextTheme,
-          appBarTheme: AppBarTheme(
-            brightness: Brightness.dark,
-            color: defaultColorScheme.primary,
-            elevation: 0,
-            centerTitle: true,
-            textTheme:
-                defaultTextTheme.apply(bodyColor: defaultColorScheme.onPrimary),
-            iconTheme: IconThemeData(color: Colors.white),
-          ),
-          colorScheme: defaultColorScheme,
-          pageTransitionsTheme: PageTransitionsTheme(
-            builders: const {
-              TargetPlatform.android: ZoomPageTransitionsBuilder(),
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<SplashBloc, SplashState>(
+            listener: (context, state) {
+              if (state is SplashLoggedOut) {
+                getIt<LocalDataSource>()
+                    .clearPrefs()
+                    .then((value) => print("TOKEN REMOVED"))
+                    .onError((error, stackTrace) {
+                  print("ERROR REMOVE TOKEN: $error,$stackTrace");
+                });
+
+                AutoRouter.of(_navKey.currentState!.context)
+                    .replaceAll([LoginPageRoute()]);
+              }
             },
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-              enableFeedback: true,
+          )
+        ],
+        child: MaterialApp.router(
+          routeInformationParser: _appRouter.defaultRouteParser(),
+          routerDelegate: _appRouter.delegate(),
+          title: 'Budget Calculator',
+          theme: ThemeData(
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            primarySwatch: Colors.green,
+            brightness: Brightness.light,
+            textTheme: defaultTextTheme,
+            appBarTheme: AppBarTheme(
+              brightness: Brightness.dark,
+              color: defaultColorScheme.primary,
+              elevation: 0,
+              centerTitle: true,
+              textTheme: defaultTextTheme.apply(
+                  bodyColor: defaultColorScheme.onPrimary),
+              iconTheme: IconThemeData(color: Colors.white),
             ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              gapPadding: 2,
+            colorScheme: defaultColorScheme,
+            pageTransitionsTheme: PageTransitionsTheme(
+              builders: const {
+                TargetPlatform.android: ZoomPageTransitionsBuilder(),
+                TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              },
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: ButtonStyle(
+                enableFeedback: true,
+              ),
+            ),
+            inputDecorationTheme: InputDecorationTheme(
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                gapPadding: 2,
+              ),
             ),
           ),
         ),
