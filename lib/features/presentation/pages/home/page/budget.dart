@@ -2,17 +2,18 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:telephony/telephony.dart';
+
 import 'package:sortika_budget_calculator/core/utils/constants.dart';
 import 'package:sortika_budget_calculator/core/utils/hex_converter.dart';
 import 'package:sortika_budget_calculator/core/utils/themes.dart';
-
 import 'package:sortika_budget_calculator/features/domain/model/expense_model.dart';
 import 'package:sortika_budget_calculator/features/domain/model/income_model.dart';
 import 'package:sortika_budget_calculator/features/presentation/bloc/expense/expense_bloc.dart';
 import 'package:sortika_budget_calculator/features/presentation/bloc/income/income_bloc.dart';
 import 'package:sortika_budget_calculator/features/presentation/pages/home/components/create_dialog.dart';
 import 'package:sortika_budget_calculator/features/presentation/pages/home/components/expense_dialog.dart';
-import 'package:telephony/telephony.dart';
 
 class BudgetPage extends StatefulWidget {
   const BudgetPage({Key? key}) : super(key: key);
@@ -31,8 +32,74 @@ class _BudgetPageState extends State<BudgetPage>
     WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
       BlocProvider.of<IncomeBloc>(context).add(GetIncomeEvent());
       BlocProvider.of<ExpenseBloc>(context).add(GetExpenseEvent());
+      handleSms();
       // handleSms(context);
     });
+  }
+
+  void handleSms() {
+    Telephony.instance
+      ..listenIncomingSms(
+        onNewMessage: (SmsMessage sms) {
+          print(sms.address);
+          print(sms.body);
+          print(sms.subject);
+          print(sms.type);
+        },
+        listenInBackground: false,
+      )
+      ..getInboxSms(
+        columns: [
+          SmsColumn.ADDRESS,
+          SmsColumn.BODY,
+          SmsColumn.DATE,
+          SmsColumn.DATE_SENT
+        ],
+        filter: SmsFilter.where(SmsColumn.ADDRESS).equals(MPESA),
+        sortOrder: [
+          OrderBy(SmsColumn.ADDRESS, sort: Sort.ASC),
+          OrderBy(SmsColumn.BODY)
+        ],
+      ).then((sms) {
+        final _list = sms
+            .where((element) =>
+                (element.body!.contains(RECEIVE)) ||
+                element.body!.contains(SENT) ||
+                element.body!.contains(BOUGHT) ||
+                element.body!.contains(AMWITHDRAW) ||
+                element.body!.contains(PMWITHDRAW))
+            .toList();
+
+        _list.forEach((element) {
+          if (element.body != null) {
+            print(element.body);
+            final _kash =
+                RegExp(MONEY_REGEX, multiLine: true).stringMatch(element.body!);
+            final _num = _kash?.replaceAll(RegExp(KASH_REGEX), '');
+
+            print("CASH: " + _num.toString());
+            _budgetObject.add(BudgetObject(
+              title: (element.body!.contains(RECEIVE)) ? "INCOME" : "EXPENSE",
+              date:
+                  DateTime.fromMillisecondsSinceEpoch(element.date!).toString(),
+              amount: double.tryParse(_num ?? "") ?? 0.0,
+              isExpense: !(element.body!.contains(RECEIVE)),
+            ));
+          }
+          // if (element.body != null && element.body!.contains(RECEIVE)) {
+          // final _kash =
+          //     RegExp(MONEY_REGEX, multiLine: true).stringMatch(element.body!);
+          // final _num = _kash?.replaceAll(RegExp(KASH_REGEX), '');
+
+          // print("CASH: " + _num.toString());
+          //   print("DATE: " +
+          //       DateTime.fromMillisecondsSinceEpoch(element.date!).toString());
+          //   print("DATE SENT: " +
+          //       DateTime.fromMillisecondsSinceEpoch(element.dateSent!)
+          //           .toString());
+          // }
+        });
+      });
   }
 
   @override
@@ -42,10 +109,13 @@ class _BudgetPageState extends State<BudgetPage>
 
   @override
   bool get wantKeepAlive => true;
+
   List<ExpenseModel> _expense = [];
   List<IncomeModel> _income = [];
+  List<BudgetObject> _budgetObject = [];
   double _totalIncome = 0.0;
   double _totalExpense = 0.0;
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -388,7 +458,7 @@ class _BudgetPageState extends State<BudgetPage>
                                     padding: const EdgeInsets.all(8.0),
                                     child: Icon(
                                       Icons.add,
-                                      color: kPurpleColor,
+                                      color: kGreen,
                                     ),
                                   ),
                                   SizedBox(width: 10),
@@ -468,6 +538,26 @@ class _BudgetPageState extends State<BudgetPage>
                   );
                 },
               ),
+              SizedBox(height: 20),
+              ListView.builder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: _budgetObject.length,
+                itemBuilder: (c, i) => ListTile(
+                  leading: _budgetObject[i].isExpense
+                      ? Icon(
+                          Icons.arrow_circle_down,
+                          color: Colors.red,
+                        )
+                      : Icon(
+                          Icons.arrow_circle_up,
+                          color: kGreen,
+                        ),
+                  title: Text(_budgetObject[i].title),
+                  subtitle: Text(_budgetObject[i].date),
+                  trailing: Text(_budgetObject[i].amount.toStringAsFixed(2)),
+                ),
+              )
             ],
           ),
         ),
@@ -495,37 +585,56 @@ double _getRecommendedLoans({
 }) =>
     ((adjPerce - (loanIntrest / 12)) * income);
 
-void handleSms(BuildContext context) {
-  Telephony.instance
-    ..listenIncomingSms(
-      onNewMessage: (SmsMessage sms) {
-        print(sms.address);
-        print(sms.body);
-        print(sms.subject);
-        print(sms.type);
-      },
-      listenInBackground: false,
-    )
-    ..getInboxSms(
-      columns: [SmsColumn.ADDRESS, SmsColumn.BODY],
-      filter: SmsFilter.where(SmsColumn.ADDRESS).equals(MPESA),
-      sortOrder: [
-        OrderBy(SmsColumn.ADDRESS, sort: Sort.ASC),
-        OrderBy(SmsColumn.BODY)
-      ],
-    ).then((sms) {
-      sms.forEach((element) {
-        if (element.body != null && element.body!.contains(RECEIVE)) {
-          // print(element.address);
-          // print(element.body);
+class BudgetObject {
+  final String title;
+  final String date;
+  final double amount;
+  final bool isExpense;
 
-          var obj = element.body!.replaceAll(RegExp('Ksh[0-9]'), "");
-          print(obj);
-          // BlocProvider.of<IncomeBloc>(context).add(CreateIncomeEvent(
-          //     list: [],
-          //     model: IncomeModel(id: 0, income: , amount: amount),
-          //     total: 0));
-        }
-      });
-    });
+  BudgetObject({
+    required this.title,
+    required this.date,
+    required this.amount,
+    required this.isExpense,
+  });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is BudgetObject &&
+        other.title == title &&
+        other.date == date &&
+        other.amount == amount &&
+        other.isExpense == isExpense;
+  }
+
+  @override
+  int get hashCode {
+    return title.hashCode ^
+        date.hashCode ^
+        amount.hashCode ^
+        isExpense.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'BudgetObject(title: $title, date: $date, amount: $amount, isExpense: $isExpense)';
+  }
 }
+
+
+
+
+
+// void main() {
+//   final _const = "You have received Ksh6,000.91, remaining is Ksh5,000.00";
+//   final _extractKash = RegExp(REG_EX, multiLine: true);
+//   final _kash = _extractKash.stringMatch(_const);
+//   final _num = _kash?.replaceAll(RegExp('[^0-9.]'), '');
+
+//   print(_extractKash);
+//   print(_kash);
+//   print(_num);
+// }
+
